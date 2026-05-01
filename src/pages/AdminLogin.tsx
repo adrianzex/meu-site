@@ -1,0 +1,171 @@
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { z } from "zod";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { Lock, ArrowLeft, ShieldCheck } from "lucide-react";
+
+const schema = z.object({
+  email: z.string().trim().email("Email inválido").max(255),
+  password: z.string().min(6, "Mínimo 6 caracteres").max(72),
+});
+
+const AdminLogin = () => {
+  const { signIn, signUp, signOut, user, isAdmin, loading } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const [mode, setMode] = useState<"login" | "signup">("login");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [promoting, setPromoting] = useState(false);
+
+  useEffect(() => {
+    if (!loading && user && isAdmin) navigate("/admin", { replace: true });
+  }, [user, isAdmin, loading, navigate]);
+
+  const handlePromote = async () => {
+    setPromoting(true);
+    const { error } = await supabase.rpc("bootstrap_first_admin");
+    setPromoting(false);
+    if (error) {
+      toast({ title: "Não foi possível promover", description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: "Você agora é admin!", description: "Recarregando..." });
+    setTimeout(() => window.location.reload(), 800);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const parsed = schema.safeParse({ email, password });
+    if (!parsed.success) {
+      toast({ title: "Dados inválidos", description: parsed.error.errors[0].message, variant: "destructive" });
+      return;
+    }
+    setSubmitting(true);
+    const { error } = mode === "login"
+      ? await signIn(parsed.data.email, parsed.data.password)
+      : await signUp(parsed.data.email, parsed.data.password);
+    setSubmitting(false);
+
+    if (error) {
+      toast({ title: "Erro", description: error, variant: "destructive" });
+      return;
+    }
+
+    if (mode === "signup") {
+      toast({
+        title: "Conta criada",
+        description: "Peça a um admin para liberar seu acesso. Você foi conectado como usuário comum.",
+      });
+    } else {
+      toast({ title: "Bem-vinda!", description: "Login realizado com sucesso." });
+    }
+  };
+
+  return (
+    <main className="min-h-screen flex items-center justify-center bg-background px-4">
+      <div className="w-full max-w-md">
+        <Link to="/" className="inline-flex items-center gap-2 text-[10px] tracking-[0.3em] uppercase text-muted-foreground hover:text-gold transition-colors mb-10 font-sans">
+          <ArrowLeft className="w-3 h-3" /> Voltar à loja
+        </Link>
+
+        <div className="border border-border/60 bg-card p-8 md:p-10 relative">
+          <div className="absolute -top-3 -left-3 w-12 h-12 border-l border-t border-gold/30" />
+          <div className="absolute -bottom-3 -right-3 w-12 h-12 border-r border-b border-gold/30" />
+
+          <div className="text-center mb-8">
+            <Lock className="w-6 h-6 mx-auto mb-4 text-gold" />
+            <h1 className="font-serif text-2xl tracking-[0.2em] uppercase mb-2">Painel Admin</h1>
+            <p className="font-script text-gold text-base">AL Intimates</p>
+          </div>
+
+          {user && !isAdmin ? (
+            <div className="space-y-5 font-sans text-center">
+              <ShieldCheck className="w-10 h-10 mx-auto text-gold" />
+              <p className="text-sm">
+                Conectado como <span className="text-gold">{user.email}</span>
+              </p>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Sua conta ainda não tem permissão de administrador.
+                Se você é o(a) primeiro(a) usuário(a) da loja, clique abaixo para se tornar admin.
+              </p>
+              <Button
+                onClick={handlePromote}
+                disabled={promoting}
+                className="w-full bg-gold text-accent-foreground hover:bg-gold/90 tracking-[0.25em] uppercase text-[10px] py-6"
+              >
+                {promoting ? "Promovendo..." : "Tornar-me primeiro admin"}
+              </Button>
+              <button
+                type="button"
+                onClick={() => signOut()}
+                className="w-full text-center text-[10px] tracking-[0.2em] uppercase text-muted-foreground hover:text-gold transition-colors pt-1"
+              >
+                Sair da conta
+              </button>
+            </div>
+          ) : (
+            <>
+              <form onSubmit={handleSubmit} className="space-y-5 font-sans">
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    maxLength={255}
+                    className="border-border/60 focus-visible:ring-gold"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="password" className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground">Senha</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    minLength={6}
+                    maxLength={72}
+                    className="border-border/60 focus-visible:ring-gold"
+                  />
+                </div>
+
+                <Button
+                  type="submit"
+                  disabled={submitting}
+                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90 tracking-[0.25em] uppercase text-[10px] py-6"
+                >
+                  {submitting ? "Aguarde..." : mode === "login" ? "Entrar" : "Criar conta"}
+                </Button>
+
+                <button
+                  type="button"
+                  onClick={() => setMode(mode === "login" ? "signup" : "login")}
+                  className="w-full text-center text-[10px] tracking-[0.2em] uppercase text-muted-foreground hover:text-gold transition-colors pt-2"
+                >
+                  {mode === "login" ? "Criar nova conta" : "Já tenho conta"}
+                </button>
+              </form>
+
+              <p className="text-[9px] text-muted-foreground/70 text-center mt-6 leading-relaxed">
+                Acesso restrito. Crie uma conta e clique em "Tornar-me primeiro admin" se for o primeiro usuário.
+              </p>
+            </>
+          )}
+        </div>
+      </div>
+    </main>
+  );
+};
+
+export default AdminLogin;
