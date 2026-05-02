@@ -13,7 +13,7 @@ const CartDrawer = () => {
       .join("\n");
     const total = `\n\n✦ Total: R$ ${totalPrice.toFixed(2)}`;
     const text = encodeURIComponent(`Olá! Gostaria de finalizar meu pedido:\n\n${msg}${total}`);
-    window.open(`https://wa.me/55991127702?text=${text}`, "_blank");
+    window.open(`https://wa.me/5549991127702?text=${text}`, "_blank");
   };
 
   return (
