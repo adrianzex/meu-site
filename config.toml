@@ -1,6 +1,6 @@
 project_id = "bppfdiwccswbgatfrvcc"
 
-[functions.pix-create]
+[functions.checkout-create]
 verify_jwt = false
 
 [functions.pix-webhook]

@@ -18,24 +18,26 @@ import { supabase } from "@/integrations/supabase/client";
 interface PixPaymentProps {
   amount: number;
   productName: string;
-  items?: Array<{ id: string; name: string; price: number; quantity: number; size?: string }>;
+  items?: Array<{ id: string; name: string; price: number; quantity: number }>;
 }
 
 const Schema = z.object({
-  name: z.string().trim().min(2, "Informe seu nome").max(120),
-  email: z.string().email("E-mail inválido").max(160),
-  phone: z.string().trim().min(10, "Telefone inválido").max(20),
-  cpf: z.string().trim().min(11, "CPF inválido").max(14),
+  name: z.string().min(2),
+  email: z.string().email(),
+  phone: z.string().min(8),
+  cpf: z.string().min(11),
 });
 
 const PixPayment = ({ amount, productName, items }: PixPaymentProps) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({ name: "", email: "", phone: "", cpf: "" });
 
-  // 🔥 NOVOS ESTADOS
-  const [qrCode, setQrCode] = useState("");
-  const [qrImage, setQrImage] = useState("");
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    cpf: "",
+  });
 
   const { toast } = useToast();
 
@@ -44,7 +46,7 @@ const PixPayment = ({ amount, productName, items }: PixPaymentProps) => {
 
     if (!parsed.success) {
       toast({
-        title: "Verifique seus dados",
+        title: "Erro nos dados",
         description: parsed.error.errors[0].message,
         variant: "destructive",
       });
@@ -55,29 +57,42 @@ const PixPayment = ({ amount, productName, items }: PixPaymentProps) => {
 
     try {
       const payload = {
-        items: items ?? [
-          { id: "single", name: productName, price: amount, quantity: 1 },
-        ],
-        customer: parsed.data,
+        items:
+          items ??
+          [
+            {
+              name: productName,
+              price: amount,
+            },
+          ],
       };
 
-      const { data, error } = await supabase.functions.invoke("pix-create", {
+      // 🔥 chama Supabase
+      const res = await supabase.functions.invoke("checkout-create", {
         body: payload,
       });
 
-      if (error) throw error;
+      console.log("SUPABASE RESPONSE:", res);
 
-      if (!data?.qr_code) throw new Error("Erro ao gerar QR Code");
+      if (res.error) throw res.error;
 
-      // ✅ AQUI MUDA TUDO
-      setQrCode(data.qr_code);
-      setQrImage(data.qr_code_base64);
+      const initPoint = res.data?.init_point;
 
+      if (!initPoint) {
+        throw new Error("init_point não retornado");
+      }
+
+      setOpen(false);
+
+      // 🚀 redireciona para Mercado Pago
+      window.location.href = initPoint;
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Erro ao gerar Pix";
+      console.error(err);
+
       toast({
-        title: "Não foi possível gerar o Pix",
-        description: msg,
+        title: "Erro ao gerar pagamento",
+        description:
+          err instanceof Error ? err.message : "Erro desconhecido",
         variant: "destructive",
       });
     } finally {
@@ -88,73 +103,70 @@ const PixPayment = ({ amount, productName, items }: PixPaymentProps) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="w-full">
+        <Button className="w-full uppercase text-xs tracking-widest">
           Pagar com Pix
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-md">
+      <DialogContent>
         <DialogHeader>
-          <DialogTitle>Gerar Pix</DialogTitle>
+          <DialogTitle>Pagamento Pix</DialogTitle>
           <DialogDescription>
-            R$ {amount.toFixed(2).replace(".", ",")}
+            Valor: R$ {amount.toFixed(2)}
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-3 py-2">
-          <Input
-            placeholder="Nome"
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-          />
+        <div className="space-y-3">
+          <div>
+            <Label>Nome</Label>
+            <Input
+              value={form.name}
+              onChange={(e) =>
+                setForm({ ...form, name: e.target.value })
+              }
+            />
+          </div>
 
-          <Input
-            placeholder="Email"
-            value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
-          />
+          <div>
+            <Label>Email</Label>
+            <Input
+              value={form.email}
+              onChange={(e) =>
+                setForm({ ...form, email: e.target.value })
+              }
+            />
+          </div>
 
-          <Input
-            placeholder="CPF"
-            value={form.cpf}
-            onChange={(e) => setForm({ ...form, cpf: e.target.value })}
-          />
+          <div>
+            <Label>CPF</Label>
+            <Input
+              value={form.cpf}
+              onChange={(e) =>
+                setForm({ ...form, cpf: e.target.value })
+              }
+            />
+          </div>
 
-          <Input
-            placeholder="Telefone"
-            value={form.phone}
-            onChange={(e) => setForm({ ...form, phone: e.target.value })}
-          />
+          <div>
+            <Label>Telefone</Label>
+            <Input
+              value={form.phone}
+              onChange={(e) =>
+                setForm({ ...form, phone: e.target.value })
+              }
+            />
+          </div>
 
-          <Button onClick={handleGenerate} disabled={loading}>
-            {loading ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Gerando...
-              </>
-            ) : (
-              "Gerar QR Code Pix"
+          <Button
+            onClick={handleGenerate}
+            disabled={loading}
+            className="w-full"
+          >
+            {loading && (
+              <Loader2 className="w-4 h-4 animate-spin mr-2" />
             )}
+            {loading ? "Gerando..." : "Ir para pagamento"}
           </Button>
-
-          {/* 🔥 QR CODE AQUI */}
-          {qrImage && (
-            <div className="mt-4 text-center">
-              <h2>Pague com Pix</h2>
-
-              <img
-                src={`data:image/png;base64,${qrImage}`}
-                alt="QR Code Pix"
-                className="mx-auto my-2 w-40"
-              />
-
-              <textarea
-                value={qrCode}
-                readOnly
-                className="w-full text-xs p-2 border rounded"
-              />
-            </div>
-          )}
         </div>
       </DialogContent>
     </Dialog>

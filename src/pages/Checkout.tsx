@@ -151,7 +151,7 @@ const Checkout = () => {
               <Button
                 onClick={() =>
                   window.open(
-                    `https://wa.me/5511999999999?text=${encodeURIComponent(
+                    `https://wa.me/5549991127702?text=${encodeURIComponent(
                       `Olá! Acabei de pagar o pedido ${payment.id.slice(0, 8)}.`,
                     )}`,
                     "_blank",

@@ -56,7 +56,7 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
         <h3 className="font-serif text-base md:text-lg tracking-wider font-normal">{product.name}</h3>
         <div className="flex items-center justify-center gap-2">
           <p className="text-primary font-semibold text-sm">R$ {product.price.toFixed(2)}</p>
-          <span className="text-[10px] text-muted-foreground">ou 3x de R$ {(product.price / 3).toFixed(2)}</span>
+          <span className="text-[10px] text-muted-foreground">ou 2x de R$ {(product.price / 2).toFixed(2)}</span>
         </div>
       </div>
     </Link>

@@ -71,7 +71,7 @@ const ProductDetail = () => {
               <h1 className="font-serif text-3xl md:text-4xl tracking-wider mb-4 font-normal">{product.name}</h1>
               <div className="flex items-baseline gap-3">
                 <p className="text-2xl font-semibold text-primary">R$ {product.price.toFixed(2)}</p>
-                <p className="text-xs text-muted-foreground">ou 3x de R$ {(product.price / 3).toFixed(2)} sem juros</p>
+                <p className="text-xs text-muted-foreground">ou 2x de R$ {(product.price / 2).toFixed(2)} sem juros</p>
               </div>
             </div>
 

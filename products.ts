@@ -79,4 +79,4 @@ export const products: Product[] = [
   },
 ];
 
-export const categories = ["Todos", "Sutiãs", "Conjuntos", "Espartilhos", "Camisolas"];
+export const categories = ["Corset", "Sutiãs", "Conjuntos", "Espartilhos", "Camisolas"];

@@ -1,55 +1,58 @@
-import mercadopago from "npm:mercadopago";
+import { serve } from "https://deno.land/std/http/server.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
-
-mercadopago.configurations.setAccessToken(
-  Deno.env.get("MP_ACCESS_TOKEN")!
-);
-
-Deno.serve(async (req) => {
-
-  // 🔥 resolve o preflight (CORS)
-  if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
-  }
-
+serve(async (req) => {
   try {
-    const { items, customer } = await req.json();
+    const body = await req.json();
+    const { amount, description, email } = body;
 
-    const payment = await mercadopago.payment.create({
-      transaction_amount: Number(items[0].price),
-      description: items[0].name,
-      payment_method_id: "pix",
-      payer: {
-        email: customer.email,
-        first_name: customer.name,
+    const MP_ACCESS_TOKEN = Deno.env.get("MP_ACCESS_TOKEN");
+
+    const response = await fetch("https://api.mercadopago.com/v1/payments", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${MP_ACCESS_TOKEN}`,
+        "Content-Type": "application/json",
       },
+      body: JSON.stringify({
+        transaction_amount: Number(amount),
+        description: description || "Pagamento Pix",
+        payment_method_id: "pix",
+        payer: {
+          email: email || "cliente@email.com",
+        },
+      }),
     });
 
-    const data =
-      payment.body.point_of_interaction.transaction_data;
+    const data = await response.json();
 
     return new Response(
       JSON.stringify({
-        qr_code: data.qr_code,
-        qr_code_base64: data.qr_code_base64,
+        success: true,
+        id: data.id,
+        qr_code: data.point_of_interaction?.transaction_data?.qr_code,
+        qr_code_base64: data.point_of_interaction?.transaction_data?.qr_code_base64,
+        copia_cola: data.point_of_interaction?.transaction_data?.qr_code,
       }),
       {
         headers: {
-          ...corsHeaders,
           "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
         },
       }
     );
-  } catch (err) {
+
+  } catch (error) {
     return new Response(
-      JSON.stringify({ error: "Erro ao gerar Pix" }),
+      JSON.stringify({
+        success: false,
+        error: error.message,
+      }),
       {
         status: 500,
-        headers: corsHeaders,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
       }
     );
   }
