@@ -31,7 +31,7 @@ const BrandStory = () => {
               sem abrir mão da sofisticação.
             </p>
             <p className="font-sans text-sm text-muted-foreground leading-[1.8]">
-              Trabalhamos com rendas francesas, sedas nobres e tecidos cuidadosamente
+              Os tecidos são cuidadosamente
               selecionados para trazer o luxo que você merece — em cada costura, em cada
               acabamento, em cada momento.
             </p>

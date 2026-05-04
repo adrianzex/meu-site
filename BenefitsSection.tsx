@@ -4,7 +4,7 @@ const benefits = [
   {
     icon: Sparkles,
     title: "Qualidade Premium",
-    desc: "Peças em renda francesa e tecidos nobres selecionados à mão",
+    desc: "Peças selecionadas a dedo, com acabamento impecável e design exclusivo",
   },
   {
     icon: Truck,
