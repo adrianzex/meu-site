@@ -16,6 +16,7 @@ import AdminLogin from "./pages/AdminLogin";
 import Admin from "./pages/Admin";
 import Checkout from "./pages/Checkout";
 import NotFound from "./pages/NotFound";
+import Popup from "./Popup";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,7 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
+          <Popup />
             <Navbar />
             <CartDrawer />
             <WhatsAppFloat />
