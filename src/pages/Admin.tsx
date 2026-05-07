@@ -574,6 +574,7 @@ sold_out: form.sold_out,
                           <span className="text-[9px] tracking-[0.2em] uppercase px-2 py-1 rounded-sm bg-gold/10 text-gold border border-gold/20 inline-flex items-center gap-1">
                             <Star className="w-2.5 h-2.5 fill-current" /> Destaque
                           </span>
+                          
                         )}
                         {p.sold_out && (
   <span className="text-[9px] tracking-[0.2em] uppercase px-2 py-1 rounded-sm bg-red-500/10 text-red-500 border border-red-500/20 inline-flex items-center gap-1">
@@ -736,8 +737,8 @@ sold_out: form.sold_out,
                   <Label className="text-[10px] tracking-[0.2em] uppercase block">Destaque</Label>
                   <p className="text-[10px] text-muted-foreground mt-0.5">Aparece na home</p>
                 </div>
-                <Label className="text-[10px] tracking-[0.2em] uppercase block">Esgotado</Label>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">Não disponível para venda</p>
+                <Label className="text-[10px] tracking-[0.2em] uppercase block">Esgotados</Label>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">Aparece na home</p>
               </div>
             </div>
           </div>
