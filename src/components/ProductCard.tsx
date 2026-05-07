@@ -33,10 +33,16 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
         <div className="absolute inset-0 bg-gradient-to-t from-foreground/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
         {product.is_featured && (
-          <span className="absolute top-3 left-3 bg-gold text-accent-foreground text-[9px] tracking-[0.2em] uppercase font-sans font-semibold px-3 py-1">
-            Destaque
-          </span>
-        )}
+  <span className="absolute top-3 left-3 bg-gold text-accent-foreground text-[9px] tracking-[0.2em] uppercase font-sans font-semibold px-3 py-1 rounded-full">
+    Destaque
+  </span>
+)}
+
+{product.soldOut && (
+  <div className="absolute top-2 right-2 bg-red-600 text-white px-3 py-1 rounded-full text-sm font-bold z-10">
+    ESGOTADO
+  </div>
+)}
 
         <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">
           <div className="bg-background/90 backdrop-blur-sm w-9 h-9 flex items-center justify-center hover:bg-gold hover:text-accent-foreground transition-colors">

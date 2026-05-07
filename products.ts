@@ -14,7 +14,11 @@ export interface Product {
   category: string;
   sizes: string[];
   details: string[];
+
+  is_featured?: boolean;
+  soldOut?: boolean;
 }
+
 
 export const products: Product[] = [
   {

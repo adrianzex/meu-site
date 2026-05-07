@@ -41,6 +41,7 @@ interface Product {
   details: string[];
   is_active: boolean;
   is_featured: boolean;
+  sold_out: boolean;
 }
 
 interface Stock {
@@ -85,9 +86,17 @@ const Admin = () => {
   const [sortBy, setSortBy] = useState<SortKey>("recent");
 
   const [form, setForm] = useState({
-    name: "", price: "", description: "", image: "", category: "",
-    sizes: "P,M,G,GG", details: "", is_active: true, is_featured: false,
-  });
+  name: "",
+  price: "",
+  description: "",
+  image: "",
+  category: "",
+  sizes: "P,M,G,GG",
+  details: "",
+  is_active: true,
+  is_featured: false,
+  sold_out: false,
+});
 
   const fetchAll = useCallback(async () => {
     setLoading(true);
@@ -165,7 +174,11 @@ const Admin = () => {
     setEditing(null);
     setForm({
       name: "", price: "", description: "", image: "", category: "",
-      sizes: "P,M,G,GG", details: "", is_active: true, is_featured: false,
+      sizes: "P,M,G,GG",
+details: "",
+is_active: true,
+is_featured: false,
+sold_out: false,
     });
     setDialogOpen(true);
   };
@@ -181,7 +194,8 @@ const Admin = () => {
       sizes: p.sizes.join(","),
       details: p.details.join("\n"),
       is_active: p.is_active,
-      is_featured: p.is_featured,
+is_featured: p.is_featured,
+sold_out: p.sold_out,
     });
     setDialogOpen(true);
   };
@@ -212,7 +226,8 @@ const Admin = () => {
       sizes: sizesArr,
       details: detailsArr,
       is_active: form.is_active,
-      is_featured: form.is_featured,
+is_featured: form.is_featured,
+sold_out: form.sold_out,
     };
 
     if (editing) {
@@ -560,6 +575,11 @@ const Admin = () => {
                             <Star className="w-2.5 h-2.5 fill-current" /> Destaque
                           </span>
                         )}
+                        {p.sold_out && (
+  <span className="text-[9px] tracking-[0.2em] uppercase px-2 py-1 rounded-sm bg-red-500/10 text-red-500 border border-red-500/20 inline-flex items-center gap-1">
+    Esgotado
+  </span>
+)}
                       </div>
                     </TableCell>
                     <TableCell className="text-right">
