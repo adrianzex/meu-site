@@ -544,43 +544,7 @@ sold_out: form.sold_out,
                     <TableCell>
                       <span className="font-serif text-base">R$ {p.price.toFixed(2)}</span>
                     </TableCell>
-                    <TableCell>
-                      <button
-                        onClick={() => setStockDialog(p)}
-                        className={`group/stock inline-flex items-center gap-2 text-xs tracking-wider px-2.5 py-1.5 border rounded-sm transition-all ${
-                          status === "esgotado" ? "border-destructive/40 text-destructive bg-destructive/5 hover:bg-destructive/10" :
-                          status === "baixo" ? "border-gold/50 text-gold bg-gold/5 hover:bg-gold/10" :
-                          "border-border text-foreground/80 hover:border-gold/40 hover:text-gold"
-                        }`}
-                      >
-                        <span className="font-medium">{total}</span>
-                        <span className="text-[9px] tracking-[0.2em] uppercase opacity-70">un</span>
-                      </button>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <button
-                          onClick={() => toggleActive(p)}
-                          title={p.is_active ? "Clique para desativar" : "Clique para ativar"}
-                          className={`text-[9px] tracking-[0.2em] uppercase px-2 py-1 rounded-sm transition-all ${
-                            p.is_active
-                              ? "bg-primary/10 text-primary hover:bg-primary/15 border border-primary/20"
-                              : "bg-muted text-muted-foreground hover:bg-muted/70 border border-border"
-                          }`}
-                        >
-                          {p.is_active ? "Ativo" : "Inativo"}
-                        </button>
-                        {p.is_featured && (
-                          <span className="text-[9px] tracking-[0.2em] uppercase px-2 py-1 rounded-sm bg-gold/10 text-gold border border-gold/20 inline-flex items-center gap-1">
-                            <Star className="w-2.5 h-2.5 fill-current" /> Destaque
-                          </span>
-                          
-                        )}
-                        {p.sold_out && (
-  <span className="text-[9px] tracking-[0.2em] uppercase px-2 py-1 rounded-sm bg-red-500/10 text-red-500 border border-red-500/20 inline-flex items-center gap-1">
-    Esgotado
-  </span>
-)}
+                   
                       </div>
                     </TableCell>
                     <TableCell className="text-right">
@@ -730,15 +694,7 @@ sold_out: form.sold_out,
                   <Label className="text-[10px] tracking-[0.2em] uppercase block">Ativo</Label>
                   <p className="text-[10px] text-muted-foreground mt-0.5">Visível na loja</p>
                 </div>
-              </div>
-              <div className="flex items-center gap-3 p-3 border border-border/60 rounded-sm bg-secondary/30">
-                <Switch checked={form.is_featured} onCheckedChange={(v) => setForm({ ...form, is_featured: v })} />
-                <div>
-                  <Label className="text-[10px] tracking-[0.2em] uppercase block">Destaque</Label>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">Aparece na home</p>
-                </div>
-                <Label className="text-[10px] tracking-[0.2em] uppercase block">Esgotados</Label>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">Aparece na home</p>
+
               </div>
             </div>
           </div>
