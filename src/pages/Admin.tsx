@@ -599,6 +599,7 @@ sold_out: form.sold_out,
                           onClick={() => toggleActive(p)}
                           title={p.is_active ? "Desativar" : "Ativar"}
                           className="h-8 w-8"
+                          
                         >
                           {p.is_active ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
                         </Button>
@@ -735,6 +736,8 @@ sold_out: form.sold_out,
                   <Label className="text-[10px] tracking-[0.2em] uppercase block">Destaque</Label>
                   <p className="text-[10px] text-muted-foreground mt-0.5">Aparece na home</p>
                 </div>
+                <Label className="text-[10px] tracking-[0.2em] uppercase block">Esgotado</Label>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">Não disponível para venda</p>
               </div>
             </div>
           </div>
